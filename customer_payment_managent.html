@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Payment Management</title>
+</head>
+<body>
+  <h2>Customer Payment Management</h2>
+
+  <!-- Add Customer Form -->
+  <h3>Add New Customer</h3>
+  <form id="add-customer-form">
+    <input type="text" id="customer-name" placeholder="Customer Name" required>
+    <input type="text" id="customer-phone" placeholder="Customer Phone Number" required>
+    <input type="text" id="customer-city" placeholder="Customer City" required>
+    <button type="submit">Add Customer</button>
+  </form>
+
+  <!-- Add Payment Form -->
+  <h3>Add Payment</h3>
+  <form id="add-payment-form">
+    <input type="text" id="payment-customer-name" placeholder="Customer Name" required>
+    <input type="number" id="payment-amount" placeholder="Payment Amount" required>
+    <button type="submit">Add Payment</button>
+  </form>
+
+  <!-- Show Customers List -->
+  <h3>Customers List</h3>
+  <ul id="customer-list"></ul>
+
+  <!-- Show Payments List -->
+  <h3>Payments List</h3>
+  <ul id="payment-list"></ul>
+
+  <script>
+    // JavaScript for managing customers and payments
+    document.getElementById("add-customer-form").addEventListener("submit", function(event) {
+      event.preventDefault();
+      const name = document.getElementById("customer-name").value;
+      const phone = document.getElementById("customer-phone").value;
+      const city = document.getElementById("customer-city").value;
+
+      // Add customer to local storage
+      let customers = JSON.parse(localStorage.getItem("customers")) || [];
+      customers.push({ name, phone, city });
+      localStorage.setItem("customers", JSON.stringify(customers));
+
+      displayCustomers();
+    });
+
+    document.getElementById("add-payment-form").addEventListener("submit", function(event) {
+      event.preventDefault();
+      const customerName = document.getElementById("payment-customer-name").value;
+      const amount = document.getElementById("payment-amount").value;
+
+      // Add payment to local storage
+      let payments = JSON.parse(localStorage.getItem("payments")) || [];
+      payments.push({ customerName, amount });
+      localStorage.setItem("payments", JSON.stringify(payments));
+
+      sendWhatsAppMessage(customerName, amount);
+
+      displayPayments();
+    });
+
+    // Function to display customers
+    function displayCustomers() {
+      let customers = JSON.parse(localStorage.getItem("customers")) || [];
+      const customerList = document.getElementById("customer-list");
+      customerList.innerHTML = "";
+      customers.forEach(customer => {
+        const li = document.createElement("li");
+        li.textContent = ${customer.name}, ${customer.phone}, ${customer.city};
+        customerList.appendChild(li);
+      });
+    }
+
+    // Function to display payments
+    function displayPayments() {
+      let payments = JSON.parse(localStorage.getItem("payments")) || [];
+      const paymentList = document.getElementById("payment-list");
+      paymentList.innerHTML = "";
+      payments.forEach(payment => {
+        const li = document.createElement("li");
+        li.textContent = ${payment.customerName} paid ${payment.amount};
+        paymentList.appendChild(li);
+      });
+    }
+
+    // Function to send WhatsApp message
+    function sendWhatsAppMessage(customerName, amount) {
+      const message = Dear ${customerName}, we have received your payment of ${amount}. Thank you!;
+      const whatsappURL = https://wa.me/?text=${encodeURIComponent(message)};
+      window.open(whatsappURL, "_blank");
+    }
+
+    // Initial display of customers and payments
+    displayCustomers();
+    displayPayments();
+  </script>
+</body>
+</html>
